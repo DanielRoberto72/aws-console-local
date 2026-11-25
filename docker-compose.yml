@@ -1,0 +1,56 @@
+name: aws-console-local
+
+services:
+  emulator:
+    build: ./emulator
+    image: aws-console-local-emulator
+    # "-a off": sem assinatura SigV4, só para uso local. A porta fica restrita a 127.0.0.1.
+    command: ["-a", "off", "-t", "off"]
+    mem_limit: 2g
+    memswap_limit: 2g
+    ports:
+      - "127.0.0.1:9297:9297"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -skf https://127.0.0.1:9297/__admin/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: console
+      POSTGRES_PASSWORD: console
+      POSTGRES_DB: console
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U console -d console"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgres://console:console@db:5432/console
+      EMULATOR_ENDPOINT: https://emulator:9297
+      SYNC_INTERVAL_MS: "15000"
+      # Portas fixas no Mac para bancos, caches e brokers do emulador (ver "Endpoint no Mac").
+      FORWARD_PORTS: "4510-4549"
+    ports:
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:4510-4549:4510-4549"
+    depends_on:
+      db:
+        condition: service_healthy
+      emulator:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  db-data:

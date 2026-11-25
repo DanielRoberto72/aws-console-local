@@ -1,0 +1,30 @@
+/* Código e JSON em fonte monoespaçada, como nos editores do console. */
+.code-area textarea {
+  font-family: Monaco, Menlo, Consolas, 'Courier Prime', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.log-output {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: Monaco, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+/* Filtro de texto e de tipo lado a lado nas tabelas de seleção do IAM. */
+.picker-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+.picker-filters > :first-child {
+  flex: 1 1 280px;
+}
+
+/* Valores longos (ARNs, endpoints) quebram em qualquer ponto nos detalhes do catálogo. */
+.wrap-anywhere {
+  overflow-wrap: anywhere;
+}
