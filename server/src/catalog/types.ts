@@ -104,7 +104,7 @@ export interface ResourceType {
   preserve?: string[];
   /**
    * Atributo com o endpoint na rede do compose ("emulator:5432"). O painel repassa cada porta
-   * citada para uma porta fixa no Mac e mostra o resultado na coluna "Endpoint no Mac".
+   * citada para uma porta fixa no host e mostra o resultado na coluna "Endpoint local".
    */
   forward?: string;
   /** Converte o recurso existente na entrada de criação usada para recriá-lo. Null: não salvar. */

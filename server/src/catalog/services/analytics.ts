@@ -47,9 +47,9 @@ import type { CatalogContext } from '../context.js';
 import { compact, endpointText, iso, list, message, num, optStr, paginate, status, str } from '../helpers.js';
 import type { ActionResult, CatalogService } from '../types.js';
 
-const PORT_NOTE = 'No Mac, use o "Endpoint no Mac", que fica fixo; o endpoint da rede do compose (host "emulator") muda de porta a cada reinício do emulador.';
+const PORT_NOTE = 'Fora do compose, use o "Endpoint local", que fica fixo; o endpoint da rede do compose (host "emulator") muda de porta a cada reinício do emulador.';
 const KAFKA_NOTE =
-  'Os brokers só são acessíveis pela rede do docker compose (host "emulator") e a porta muda a cada reinício do emulador. Não há repasse para o Mac: o cliente Kafka recebe dos brokers o endereço interno e não conseguiria segui-lo.';
+  'Os brokers só são acessíveis pela rede do docker compose (host "emulator") e a porta muda a cada reinício do emulador. Não há repasse para o host: o cliente Kafka recebe dos brokers o endereço interno e não conseguiria segui-lo.';
 
 export function openSearchService(ctx: CatalogContext): CatalogService {
   const os = () => ctx.client(OpenSearchClient);

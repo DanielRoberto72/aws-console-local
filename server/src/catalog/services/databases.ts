@@ -18,7 +18,7 @@ import type { CatalogService, FieldSpec, Input } from '../types.js';
 export const FALLBACK_DB_PASSWORD = 'ConsoleLocal123';
 
 const PORT_NOTE =
-  'O banco roda de verdade dentro do emulador. No Mac, conecte pelo "Endpoint no Mac", que fica fixo; o endpoint da rede do compose (host "emulator") muda de porta a cada reinício do emulador.';
+  'O banco roda de verdade dentro do emulador. Fora do compose, conecte pelo "Endpoint local", que fica fixo; o endpoint da rede do compose (host "emulator") muda de porta a cada reinício do emulador.';
 
 const identifier: FieldSpec = {
   name: 'id',
@@ -140,16 +140,16 @@ export function rdsService(ctx: CatalogContext): CatalogService {
               const user = db?.MasterUsername ?? 'admin1';
               const name = db?.DBName ?? (db?.Engine === 'postgres' ? 'postgres' : '');
               const postgres = db?.Engine === 'postgres';
-              // A porta do Mac é atribuída pelo repasse e aparece em "Endpoint no Mac" nos detalhes.
-              const fromMac = postgres
-                ? `psql -h localhost -p <porta do "Endpoint no Mac"> -U ${user} -d ${name}`
-                : `mysql -h 127.0.0.1 -P <porta do "Endpoint no Mac"> -u ${user} -p ${name}`;
+              // A porta do host é atribuída pelo repasse e aparece em "Endpoint local" nos detalhes.
+              const fromHost = postgres
+                ? `psql -h localhost -p <porta do "Endpoint local"> -U ${user} -d ${name}`
+                : `mysql -h 127.0.0.1 -P <porta do "Endpoint local"> -u ${user} -p ${name}`;
               const fromCompose = postgres
                 ? `docker compose exec db psql -h emulator -p ${port} -U ${user} -d ${name}`
                 : `mysql -h emulator -P ${port} -u ${user} -p ${name}`;
               return {
                 kind: 'text',
-                text: `Usuário: ${user}\n\nDo Mac (porta fixa):\n${fromMac}\n\nDe dentro do docker compose (a porta ${port} muda a cada reinício do emulador):\n${fromCompose}`,
+                text: `Usuário: ${user}\n\nDa máquina host (porta fixa):\n${fromHost}\n\nDe dentro do docker compose (a porta ${port} muda a cada reinício do emulador):\n${fromCompose}`,
               };
             },
           },

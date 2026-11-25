@@ -148,7 +148,7 @@ export function appSyncService(ctx: CatalogContext): CatalogService {
     name: 'AppSync',
     description: 'APIs GraphQL gerenciadas',
     category: 'Front-end web e mobile',
-    notes: 'A API abre um endpoint GraphQL no emulador. No Mac, use o "Endpoint no Mac", que fica fixo. Resolvers não são configurados por este painel.',
+    notes: 'A API abre um endpoint GraphQL no emulador. Fora do compose, use o "Endpoint local", que fica fixo. Resolvers não são configurados por este painel.',
     types: [
       {
         key: 'graphql-api',

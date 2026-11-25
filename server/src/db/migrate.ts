@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS activity (
   message text
 );
 
--- Porta fixa no Mac de cada endpoint repassado (bancos, caches): sobrevive aos reinícios.
+-- Porta fixa no host de cada endpoint repassado (bancos, caches): sobrevive aos reinícios.
 CREATE TABLE IF NOT EXISTS port_forwards (
   key text PRIMARY KEY,
   local_port int NOT NULL UNIQUE,

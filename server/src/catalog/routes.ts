@@ -33,7 +33,7 @@ function fieldSchema(field: FieldSpec): Record<string, unknown> {
   }
 }
 
-const LOCAL_COLUMN: ColumnSpec = { key: 'localEndpoint', label: 'Endpoint no Mac' };
+const LOCAL_COLUMN: ColumnSpec = { key: 'localEndpoint', label: 'Endpoint local' };
 
 /** A coluna do repasse fica logo depois da coluna do endpoint original. */
 function withLocalColumn(columns: readonly ColumnSpec[], attr: string): ColumnSpec[] {
@@ -99,7 +99,7 @@ export function catalogRoutes(
   }: RouteDeps & {
     registry: CatalogRegistry;
     rememberInput: (service: string, type: string, id: string, input: Input, parentId?: string) => void;
-    /** Complementa a lista completa de um tipo (ex.: endpoint repassado para o Mac). */
+    /** Complementa a lista completa de um tipo (ex.: endpoint repassado para o host). */
     decorate: (service: string, type: ResourceType, rows: ResourceRow[]) => Promise<ResourceRow[]>;
   },
 ): void {

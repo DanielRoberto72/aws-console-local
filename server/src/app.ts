@@ -76,7 +76,7 @@ export interface AppDeps {
   probe: () => Promise<EmulatorProbe>;
   syncIntervalMs: number;
   webDistDir: string | undefined;
-  /** Repasse de portas para o Mac; ausente fora do compose. */
+  /** Repasse de portas para o host; ausente fora do compose. */
   forwarding?: { ports: PortRange; listenHost: string };
 }
 

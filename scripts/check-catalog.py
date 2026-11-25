@@ -127,23 +127,23 @@ def do_verify():
     if sql.stdout.strip() != "42":
         fail(f"não conectou no RDS recriado com a senha original: {sql.stderr.strip()}")
 
-    # Pelo repasse: a porta do Mac fica fixa mesmo com a porta interna nova.
-    local = find("rds", "db-instance", lambda r: r["id"] == NAME)["attrs"].get("localEndpoint") or fail("RDS sem endpoint no Mac")
+    # Pelo repasse: a porta do host fica fixa mesmo com a porta interna nova.
+    local = find("rds", "db-instance", lambda r: r["id"] == NAME)["attrs"].get("localEndpoint") or fail("RDS sem endpoint no host")
     sql = subprocess.run(
         ["docker", "compose", "exec", "-T", "-e", f"PGPASSWORD={DB_PASSWORD}", "db", "psql", "-h", "host.docker.internal", "-p", local.split(":")[1], "-U", "admin1", "-d", "app", "-tAc", "select 7"],
         capture_output=True,
         text=True,
     )
     if sql.stdout.strip() != "7":
-        fail(f"não conectou no RDS pela porta do Mac {local}: {sql.stderr.strip()}")
+        fail(f"não conectou no RDS pela porta do host {local}: {sql.stderr.strip()}")
 
     find("elasticache", "cache-cluster", lambda r: r["id"] == NAME) or fail("cache não voltou")
-    wait_for("endpoint do cache no Mac", lambda: (find("elasticache", "cache-cluster", lambda r: r["id"] == NAME) or {}).get("attrs", {}).get("localEndpoint"))
+    wait_for("endpoint do cache no host", lambda: (find("elasticache", "cache-cluster", lambda r: r["id"] == NAME) or {}).get("attrs", {}).get("localEndpoint"))
     cache = find("elasticache", "cache-cluster", lambda r: r["id"] == NAME)
     with socket.create_connection(("127.0.0.1", int(cache["attrs"]["localEndpoint"].split(":")[1])), timeout=5) as conn:
         conn.sendall(b"PING\r\n")
         if not conn.recv(16).startswith(b"+PONG"):
-            fail("Redis não respondeu pela porta do Mac")
+            fail("Redis não respondeu pela porta do host")
 
     pool = find("cognito", "user-pool", lambda r: r["name"] == NAME) or fail("grupo do Cognito não voltou")
     client = rows("cognito", "client", pool["id"])[0]

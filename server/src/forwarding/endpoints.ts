@@ -49,7 +49,7 @@ export function localText(text: string, host: string, localPorts: (number | null
 
 /**
  * Escolhe a porta local de um endpoint. A mesma chave mantém sempre a mesma porta, para
- * que a string de conexão no Mac não mude quando o emulador reinicia. Com a faixa cheia,
+ * que a string de conexão no host não mude quando o emulador reinicia. Com a faixa cheia,
  * reaproveita a porta do endpoint inativo visto há mais tempo.
  */
 export function choosePort(range: PortRange, allocations: readonly Allocation[], key: string, activeKeys: ReadonlySet<string>): number | null {

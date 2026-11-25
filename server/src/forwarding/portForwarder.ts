@@ -45,7 +45,7 @@ export interface ForwardSource {
 
 /**
  * Repasse TCP de portas fixas no app para as portas que o emulador sorteia para bancos,
- * caches e brokers. Assim o Mac conecta sempre em localhost:<porta fixa>, mesmo depois
+ * caches e brokers. Assim o host conecta sempre em localhost:<porta fixa>, mesmo depois
  * de o emulador reiniciar e o recurso voltar em outra porta.
  */
 export class PortForwarder {

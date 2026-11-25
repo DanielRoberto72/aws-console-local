@@ -7,7 +7,7 @@ export interface AppConfig {
   emulatorEndpoint: string;
   region: string;
   syncIntervalMs: number;
-  /** Faixa de portas fixas para repassar bancos e caches do emulador ao Mac; null desliga. */
+  /** Faixa de portas fixas para repassar bancos e caches do emulador ao host; null desliga. */
   forwardPorts: PortRange | null;
   /** Pasta com o build do frontend; ausente em desenvolvimento (o Vite serve a interface). */
   webDistDir: string | undefined;
