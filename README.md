@@ -56,7 +56,7 @@ Requer [Docker Desktop](https://www.docker.com/products/docker-desktop/) e uns 3
 usa até 2 GB). Testado em Mac com Apple Silicon; a imagem também é construída para x86_64, mas não foi testada lá.
 
 ```bash
-git clone <url-deste-repositório> aws-console-local
+git clone https://github.com/DanielRoberto72/aws-console-local.git
 cd aws-console-local
 docker compose up -d --build
 ```
