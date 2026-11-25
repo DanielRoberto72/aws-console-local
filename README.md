@@ -300,3 +300,8 @@ persistência são geradas a partir da declaração.
 **Serviço com telas dedicadas:** crie o módulo em `server/src/<serviço>/` com o service, as rotas e um `SyncAdapter`
 (use o `ResourceStore` se não precisar de consultas próprias). Registre-o em `server/src/app.ts` na posição certa da
 ordem de restauração. Crie as páginas em `web/src/pages/<serviço>/` e a entrada em `web/src/layout/services.ts`.
+
+## Licença
+
+Este projeto é licenciado sob a licença MIT. Veja [LICENSE](LICENSE). O AWS Emulator não faz parte deste repositório:
+a imagem `emulator/Dockerfile` baixa o pacote oficial durante o build, e o emulador segue a própria licença.

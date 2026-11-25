@@ -1,6 +1,7 @@
 {
   "name": "aws-console-local",
   "private": true,
+  "license": "MIT",
   "workspaces": ["server", "web"],
   "scripts": {
     "dev:server": "npm run dev -w server",
