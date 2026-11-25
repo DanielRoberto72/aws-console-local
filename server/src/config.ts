@@ -9,6 +9,8 @@ export interface AppConfig {
   syncIntervalMs: number;
   /** Faixa de portas fixas para repassar bancos e caches do emulador ao host; null desliga. */
   forwardPorts: PortRange | null;
+  /** Arquivo com a saída de `aws-emulator --version`, escrito pelo container do emulador. */
+  emulatorVersionFile: string | undefined;
   /** Pasta com o build do frontend; ausente em desenvolvimento (o Vite serve a interface). */
   webDistDir: string | undefined;
 }
@@ -37,6 +39,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     region: env.AWS_REGION ?? 'us-east-1',
     syncIntervalMs: positiveInt(env, 'SYNC_INTERVAL_MS', 15_000),
     forwardPorts: parsePortRange(env.FORWARD_PORTS),
+    emulatorVersionFile: env.EMULATOR_VERSION_FILE || undefined,
     webDistDir: env.WEB_DIST_DIR || undefined,
   };
 }

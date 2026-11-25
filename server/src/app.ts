@@ -60,6 +60,8 @@ import { stepFunctionsRoutes } from './stepfunctions/routes.js';
 import { StepFunctionsService } from './stepfunctions/stepFunctionsService.js';
 import { StepFunctionsSync } from './stepfunctions/stepFunctionsSync.js';
 import { SyncMonitor } from './sync/syncMonitor.js';
+import { EmulatorInfo } from './emulator/emulatorInfo.js';
+import { emulatorRoutes } from './emulator/routes.js';
 import { CatalogForwarding } from './forwarding/catalogForwarding.js';
 import type { PortRange } from './forwarding/endpoints.js';
 import { PgAllocationStore, PortForwarder } from './forwarding/portForwarder.js';
@@ -78,6 +80,7 @@ export interface AppDeps {
   webDistDir: string | undefined;
   /** Repasse de portas para o host; ausente fora do compose. */
   forwarding?: { ports: PortRange; listenHost: string };
+  emulatorVersionFile?: string;
 }
 
 /** Ponto de composição: conecta serviços, persistência e rotas. */
@@ -178,6 +181,7 @@ export async function buildApp(deps: AppDeps): Promise<{ app: FastifyInstance; s
   });
   activityRoutes(app, activity);
   overviewRoutes(app, deps.db, sync);
+  emulatorRoutes(app, new EmulatorInfo(deps.db, deps.emulatorVersionFile, app.log));
 
   if (deps.webDistDir && existsSync(deps.webDistDir)) {
     await app.register(fastifyStatic, { root: deps.webDistDir });

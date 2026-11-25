@@ -21,6 +21,10 @@ ENV HOME=/home/emulator \
     EMULATOR_BIND_ADDRESS=0.0.0.0 \
     EMULATOR_TELEMETRY=off
 
+# Fora do RUN de download para não invalidar o cache do pacote.
+RUN mkdir -p /run/emulator-info && chown 1000:1000 /run/emulator-info
+COPY --chmod=755 start.sh /usr/local/bin/start-emulator
+
 USER 1000
 EXPOSE 9297
-ENTRYPOINT ["aws-emulator"]
+ENTRYPOINT ["start-emulator"]

@@ -66,6 +66,13 @@ CREATE TABLE IF NOT EXISTS port_forwards (
   last_seen timestamptz NOT NULL DEFAULT now()
 );
 
+-- Notas de fidelidade publicadas com cada versão do emulador (scores.json.gz, como baixado).
+CREATE TABLE IF NOT EXISTS emulator_scores (
+  version text PRIMARY KEY,
+  document bytea NOT NULL,
+  fetched_at timestamptz NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS sync_state (
   id int PRIMARY KEY CHECK (id = 1),
   restored_boot_id text,

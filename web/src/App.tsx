@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ConsoleLayout } from './layout/ConsoleLayout';
 import { NotificationsProvider } from './layout/notifications';
+import { FidelityProvider } from './layout/fidelity';
 import { ServiceDirectoryProvider } from './layout/serviceDirectory';
 import { ActivityPage } from './pages/activity/ActivityPage';
 import { CatalogItemPage, CatalogServiceRedirect, CatalogToolsPage, CatalogTypePage } from './pages/catalog/CatalogPages';
@@ -61,81 +62,83 @@ export function App() {
   return (
     <NotificationsProvider>
       <ServiceDirectoryProvider>
-      <ConsoleLayout>
-        <Routes>
-          <Route path="/" element={<ConsoleHome />} />
-          <Route path="/activity" element={<ActivityPage />} />
-          <Route path="/iam" element={<Navigate to="/iam/home" replace />} />
-          <Route path="/iam/home" element={<IamDashboardPage />} />
-          <Route path="/iam/users" element={<UsersPage />} />
-          <Route path="/iam/create-user" element={<CreateUserPage />} />
-          <Route path="/iam/users/:name" element={<UserDetailPage />} />
-          <Route path="/iam/groups" element={<GroupsPage />} />
-          <Route path="/iam/create-group" element={<CreateGroupPage />} />
-          <Route path="/iam/groups/:name" element={<GroupDetailPage />} />
-          <Route path="/iam/roles" element={<RolesPage />} />
-          <Route path="/iam/create-role" element={<CreateRolePage />} />
-          <Route path="/iam/roles/:name" element={<RoleDetailPage />} />
-          <Route path="/iam/policies" element={<PoliciesPage />} />
-          <Route path="/iam/create-policy" element={<CreatePolicyPage />} />
-          <Route path="/iam/policy" element={<PolicyDetailPage />} />
-          <Route path="/s3" element={<Navigate to="/s3/buckets" replace />} />
-          <Route path="/s3/buckets" element={<BucketsPage />} />
-          <Route path="/s3/create-bucket" element={<CreateBucketPage />} />
-          <Route path="/s3/buckets/:bucket" element={<BucketDetailPage />} />
-          <Route path="/dynamodb" element={<Navigate to="/dynamodb/tables" replace />} />
-          <Route path="/dynamodb/tables" element={<TablesPage />} />
-          <Route path="/dynamodb/create-table" element={<CreateTablePage />} />
-          <Route path="/dynamodb/tables/:table" element={<TableDetailPage />} />
-          <Route path="/sqs" element={<Navigate to="/sqs/queues" replace />} />
-          <Route path="/sqs/queues" element={<QueuesPage />} />
-          <Route path="/sqs/create-queue" element={<CreateQueuePage />} />
-          <Route path="/sqs/queues/:queue" element={<QueueDetailPage />} />
-          <Route path="/lambda" element={<Navigate to="/lambda/functions" replace />} />
-          <Route path="/lambda/functions" element={<FunctionsPage />} />
-          <Route path="/lambda/create-function" element={<CreateFunctionPage />} />
-          <Route path="/lambda/functions/:name" element={<FunctionDetailPage />} />
-          <Route path="/logs" element={<Navigate to="/logs/groups" replace />} />
-          <Route path="/logs/groups" element={<LogGroupsPage />} />
-          <Route path="/logs/group" element={<LogGroupPage />} />
-          <Route path="/logs/stream" element={<LogStreamPage />} />
-          <Route path="/sns" element={<Navigate to="/sns/topics" replace />} />
-          <Route path="/sns/topics" element={<TopicsPage />} />
-          <Route path="/sns/topics/:topic" element={<TopicDetailPage />} />
-          <Route path="/secrets" element={<SecretsPage />} />
-          <Route path="/secrets/detail" element={<SecretDetailPage />} />
-          <Route path="/ssm" element={<Navigate to="/ssm/parameters" replace />} />
-          <Route path="/ssm/parameters" element={<ParametersPage />} />
-          <Route path="/ssm/parameter" element={<ParameterDetailPage />} />
-          <Route path="/events" element={<Navigate to="/events/rules" replace />} />
-          <Route path="/events/rules" element={<RulesPage />} />
-          <Route path="/events/create-rule" element={<CreateRulePage />} />
-          <Route path="/events/rule" element={<RuleDetailPage />} />
-          <Route path="/events/buses" element={<BusesPage />} />
-          <Route path="/events/send" element={<SendEventsPage />} />
-          <Route path="/scheduler" element={<Navigate to="/scheduler/schedules" replace />} />
-          <Route path="/scheduler/schedules" element={<SchedulesPage />} />
-          <Route path="/scheduler/create-schedule" element={<CreateSchedulePage />} />
-          <Route path="/scheduler/schedules/:group/:name" element={<ScheduleDetailPage />} />
-          <Route path="/stepfunctions" element={<Navigate to="/stepfunctions/state-machines" replace />} />
-          <Route path="/stepfunctions/state-machines" element={<StateMachinesPage />} />
-          <Route path="/stepfunctions/create" element={<CreateStateMachinePage />} />
-          <Route path="/stepfunctions/state-machines/:name" element={<StateMachineDetailPage />} />
-          <Route path="/stepfunctions/execution" element={<ExecutionPage />} />
-          <Route path="/s3vectors" element={<Navigate to="/s3vectors/buckets" replace />} />
-          <Route path="/s3vectors/buckets" element={<VectorBucketsPage />} />
-          <Route path="/s3vectors/buckets/:bucket" element={<VectorBucketPage />} />
-          <Route path="/s3vectors/buckets/:bucket/indexes/:index" element={<VectorIndexPage />} />
-          <Route path="/bedrock" element={<Navigate to="/bedrock/playground" replace />} />
-          <Route path="/bedrock/playground" element={<PlaygroundPage />} />
-          <Route path="/bedrock/models" element={<ModelsPage />} />
-          <Route path="/c/:service" element={<CatalogServiceRedirect />} />
-          <Route path="/c/:service/tools" element={<CatalogToolsPage />} />
-          <Route path="/c/:service/:type" element={<CatalogTypePage />} />
-          <Route path="/c/:service/:type/item" element={<CatalogItemPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </ConsoleLayout>
+        <FidelityProvider>
+          <ConsoleLayout>
+            <Routes>
+              <Route path="/" element={<ConsoleHome />} />
+              <Route path="/activity" element={<ActivityPage />} />
+              <Route path="/iam" element={<Navigate to="/iam/home" replace />} />
+              <Route path="/iam/home" element={<IamDashboardPage />} />
+              <Route path="/iam/users" element={<UsersPage />} />
+              <Route path="/iam/create-user" element={<CreateUserPage />} />
+              <Route path="/iam/users/:name" element={<UserDetailPage />} />
+              <Route path="/iam/groups" element={<GroupsPage />} />
+              <Route path="/iam/create-group" element={<CreateGroupPage />} />
+              <Route path="/iam/groups/:name" element={<GroupDetailPage />} />
+              <Route path="/iam/roles" element={<RolesPage />} />
+              <Route path="/iam/create-role" element={<CreateRolePage />} />
+              <Route path="/iam/roles/:name" element={<RoleDetailPage />} />
+              <Route path="/iam/policies" element={<PoliciesPage />} />
+              <Route path="/iam/create-policy" element={<CreatePolicyPage />} />
+              <Route path="/iam/policy" element={<PolicyDetailPage />} />
+              <Route path="/s3" element={<Navigate to="/s3/buckets" replace />} />
+              <Route path="/s3/buckets" element={<BucketsPage />} />
+              <Route path="/s3/create-bucket" element={<CreateBucketPage />} />
+              <Route path="/s3/buckets/:bucket" element={<BucketDetailPage />} />
+              <Route path="/dynamodb" element={<Navigate to="/dynamodb/tables" replace />} />
+              <Route path="/dynamodb/tables" element={<TablesPage />} />
+              <Route path="/dynamodb/create-table" element={<CreateTablePage />} />
+              <Route path="/dynamodb/tables/:table" element={<TableDetailPage />} />
+              <Route path="/sqs" element={<Navigate to="/sqs/queues" replace />} />
+              <Route path="/sqs/queues" element={<QueuesPage />} />
+              <Route path="/sqs/create-queue" element={<CreateQueuePage />} />
+              <Route path="/sqs/queues/:queue" element={<QueueDetailPage />} />
+              <Route path="/lambda" element={<Navigate to="/lambda/functions" replace />} />
+              <Route path="/lambda/functions" element={<FunctionsPage />} />
+              <Route path="/lambda/create-function" element={<CreateFunctionPage />} />
+              <Route path="/lambda/functions/:name" element={<FunctionDetailPage />} />
+              <Route path="/logs" element={<Navigate to="/logs/groups" replace />} />
+              <Route path="/logs/groups" element={<LogGroupsPage />} />
+              <Route path="/logs/group" element={<LogGroupPage />} />
+              <Route path="/logs/stream" element={<LogStreamPage />} />
+              <Route path="/sns" element={<Navigate to="/sns/topics" replace />} />
+              <Route path="/sns/topics" element={<TopicsPage />} />
+              <Route path="/sns/topics/:topic" element={<TopicDetailPage />} />
+              <Route path="/secrets" element={<SecretsPage />} />
+              <Route path="/secrets/detail" element={<SecretDetailPage />} />
+              <Route path="/ssm" element={<Navigate to="/ssm/parameters" replace />} />
+              <Route path="/ssm/parameters" element={<ParametersPage />} />
+              <Route path="/ssm/parameter" element={<ParameterDetailPage />} />
+              <Route path="/events" element={<Navigate to="/events/rules" replace />} />
+              <Route path="/events/rules" element={<RulesPage />} />
+              <Route path="/events/create-rule" element={<CreateRulePage />} />
+              <Route path="/events/rule" element={<RuleDetailPage />} />
+              <Route path="/events/buses" element={<BusesPage />} />
+              <Route path="/events/send" element={<SendEventsPage />} />
+              <Route path="/scheduler" element={<Navigate to="/scheduler/schedules" replace />} />
+              <Route path="/scheduler/schedules" element={<SchedulesPage />} />
+              <Route path="/scheduler/create-schedule" element={<CreateSchedulePage />} />
+              <Route path="/scheduler/schedules/:group/:name" element={<ScheduleDetailPage />} />
+              <Route path="/stepfunctions" element={<Navigate to="/stepfunctions/state-machines" replace />} />
+              <Route path="/stepfunctions/state-machines" element={<StateMachinesPage />} />
+              <Route path="/stepfunctions/create" element={<CreateStateMachinePage />} />
+              <Route path="/stepfunctions/state-machines/:name" element={<StateMachineDetailPage />} />
+              <Route path="/stepfunctions/execution" element={<ExecutionPage />} />
+              <Route path="/s3vectors" element={<Navigate to="/s3vectors/buckets" replace />} />
+              <Route path="/s3vectors/buckets" element={<VectorBucketsPage />} />
+              <Route path="/s3vectors/buckets/:bucket" element={<VectorBucketPage />} />
+              <Route path="/s3vectors/buckets/:bucket/indexes/:index" element={<VectorIndexPage />} />
+              <Route path="/bedrock" element={<Navigate to="/bedrock/playground" replace />} />
+              <Route path="/bedrock/playground" element={<PlaygroundPage />} />
+              <Route path="/bedrock/models" element={<ModelsPage />} />
+              <Route path="/c/:service" element={<CatalogServiceRedirect />} />
+              <Route path="/c/:service/tools" element={<CatalogToolsPage />} />
+              <Route path="/c/:service/:type" element={<CatalogTypePage />} />
+              <Route path="/c/:service/:type/item" element={<CatalogItemPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </ConsoleLayout>
+        </FidelityProvider>
       </ServiceDirectoryProvider>
     </NotificationsProvider>
   );

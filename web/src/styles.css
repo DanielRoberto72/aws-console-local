@@ -28,3 +28,12 @@
 .wrap-anywhere {
   overflow-wrap: anywhere;
 }
+
+.fidelity-list {
+  margin: 0;
+  padding-inline-start: 18px;
+}
+
+.fidelity-list li + li {
+  margin-top: 4px;
+}

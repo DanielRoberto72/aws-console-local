@@ -20,6 +20,9 @@ import { useNotifications } from '../../layout/notifications';
 import { CATEGORIES } from '../../layout/services';
 import { useServiceDirectory } from '../../layout/serviceDirectory';
 import { ActivityTable } from '../activity/ActivityTable';
+import { EmulatorVersion } from '../emulator/EmulatorVersion';
+import { FidelityBadge } from '../emulator/FidelityBadge';
+import { useFidelity } from '../../layout/fidelity';
 
 const OVERVIEW_POLL_MS = 10_000;
 
@@ -64,6 +67,7 @@ export function ConsoleHome() {
   const follow = useFollow();
   const directory = useServiceDirectory();
   const notifications = useNotifications();
+  const fidelity = useFidelity();
   const overview = useRemote((signal) => overviewApi.overview(signal), []);
   usePolling(overview.reload, OVERVIEW_POLL_MS);
   const data = overview.data;
@@ -126,6 +130,7 @@ export function ConsoleHome() {
                 ]}
               />
               {data.sync.lastError && <StatusIndicator type="warning">{data.sync.lastError}</StatusIndicator>}
+              <EmulatorVersion />
             </SpaceBetween>
           </Container>
 
@@ -164,16 +169,25 @@ export function ConsoleHome() {
               ]}
               empty={<Box textAlign="center" color="inherit">Nenhum recurso</Box>}
             />
-            <Container header={<Header variant="h2">Serviços</Header>}>
+            <Container
+              header={
+                <Header variant="h2" description="O selo indica a fidelidade do serviço no emulador; o painel lateral de cada serviço detalha o que falha">
+                  Serviços
+                </Header>
+              }
+            >
               <ColumnLayout columns={4} variant="text-grid">
                 {CATEGORIES.map((category) => (
                   <SpaceBetween key={category} size="xs">
                     <Box variant="awsui-key-label">{category}</Box>
                     {directory.services.filter((s) => s.category === category).map((service) => (
                       <div key={service.id}>
-                        <Link href={service.links[0]!.href} onFollow={follow}>
-                          {service.name}
-                        </Link>
+                        <SpaceBetween size="xxs" direction="horizontal" alignItems="center">
+                          <Link href={service.links[0]!.href} onFollow={follow}>
+                            {service.name}
+                          </Link>
+                          <FidelityBadge summary={fidelity.summary(service.id)} />
+                        </SpaceBetween>
                         <Box variant="small" display="block">
                           {service.description}
                         </Box>

@@ -22,6 +22,8 @@ AWS em erros, limites e detalhes.
   reinicia. Isso inclui recursos criados fora do console, pela AWS CLI, por SDKs ou pelo Terraform.
 - **Endpoints locais fixos.** Bancos, caches e brokers (RDS, ElastiCache, Redshift, OpenSearch, MQ, AppSync) recebem
   uma porta fixa em `localhost`, que não muda entre reinícios do emulador.
+- **Fidelidade por serviço.** Cada serviço mostra a fração dos testes do AWS Emulator em que ele responde como a AWS,
+  e o que falha, na versão do emulador em uso.
 
 ## Casos de uso
 
@@ -155,6 +157,37 @@ A página inicial mostra o uso consolidado, o estado do emulador e a atividade r
   validar o formato das chamadas, não o conteúdo.
 - **S3 Vectors** calcula distâncias reais. Os embeddings precisam ser gerados fora do emulador.
 
+## Versão e fidelidade
+
+A página inicial mostra a versão do AWS Emulator em uso e a mais recente publicada. Quando há versão nova, ela também
+mostra os comandos para atualizar:
+
+```bash
+docker compose build --no-cache emulator
+docker compose up -d emulator
+```
+
+O estado salvo é recriado no emulador novo, como em qualquer reinício. A AWS publica apenas a versão mais recente do
+pacote, sem URLs por versão. Por isso, cada build usa a versão do dia e não é possível voltar para uma anterior, a não
+ser que a imagem antiga tenha sido guardada (por exemplo, com `docker tag`).
+
+Cada versão do emulador publica no GitHub um arquivo de notas de fidelidade (`scores.json.gz`) com dezenas de milhares
+de testes que comparam o emulador com a AWS. O console usa as notas da versão em uso:
+
+- **Selo em cada serviço**, na navegação lateral e na página inicial, com a fração de testes aprovados: verde a partir
+  de 90%, azul a partir de 75% e vermelho abaixo disso. As faixas são deste console, não da AWS.
+- **Painel lateral** (ícone de informações, à direita) em cada página de serviço, com a nota separada em formato das
+  respostas e comportamento, e as listas de operações e comportamentos que diferem da AWS.
+
+A nota mede o serviço inteiro no emulador, inclusive operações que o console não usa. O CloudFormation, por exemplo,
+tem nota baixa porque os testes cobrem muito mais operações e tipos de recurso do que o console usa, mas cria de
+verdade as stacks com os recursos emulados. Já os serviços de IA podem ter nota alta mesmo devolvendo conteúdo de exemplo.
+
+A versão em uso é escrita pelo container do emulador num volume compartilhado com o `app` (`emulator/start.sh`), pois
+o emulador não a expõe pela API. Para consultar a versão mais recente e baixar as notas, o `app` acessa
+`downloads.aws.com` e `github.com`. As notas ficam guardadas no Postgres depois do primeiro download. Sem acesso à
+internet, o console continua funcionando, apenas sem essas informações.
+
 ## Endpoints locais
 
 Bancos, caches e brokers abrem portas dentro do container do emulador, e essas portas mudam a cada reinício. O
@@ -274,6 +307,7 @@ npm test
 ├── docker-compose.yml       # emulador, Postgres e app
 ├── Dockerfile               # app: API (Fastify) e frontend compilado
 ├── emulator/Dockerfile      # imagem do AWS Emulator (no macOS ele só roda em container)
+├── emulator/start.sh        # inicia o emulador e registra a versão em uso para o app
 ├── server/src/
 │   ├── <serviço>/           # por serviço: operações no emulador (*Service), rotas HTTP e persistência (*Sync)
 │   ├── iam/                 # usuários, grupos, funções e políticas; funções padrão
@@ -282,11 +316,13 @@ npm test
 │   ├── catalog/             # catálogo genérico: tipos, rotas, persistência com remapeamento de IDs
 │   │   └── services/        # definições dos serviços do catálogo (EC2, RDS, Cognito, KMS...)
 │   ├── forwarding/          # repasse TCP das portas internas do emulador para portas fixas do host
+│   ├── emulator/            # versão do emulador, versão mais recente e notas de fidelidade por serviço
 │   ├── sync/                # monitor que decide entre restaurar e espelhar
 │   └── overview/ activity/  # uso consolidado e histórico de ações
 ├── web/src/
 │   ├── layout/              # TopNavigation, SideNavigation, breadcrumbs e notificações
-│   └── pages/               # telas por serviço; pages/catalog/ tem as telas genéricas do catálogo
+│   └── pages/               # telas por serviço; pages/catalog/ tem as telas genéricas do catálogo e
+│                            # pages/emulator/ a versão e a fidelidade
 └── scripts/                 # verificação de ponta a ponta da persistência
 ```
 
@@ -294,7 +330,8 @@ npm test
 
 **Serviço do catálogo** (só configuração): declare-o em `server/src/catalog/services/`, com tipos que definem `list`,
 `create`, `remove`, `actions` e `persist`. Se o recurso abrir uma porta, defina `forward` com o atributo do endpoint.
-Registre o serviço em `server/src/catalog/index.ts` e em `server/src/catalog/ids.ts`. Rotas, telas, navegação e
+Registre o serviço em `server/src/catalog/index.ts` e em `server/src/catalog/ids.ts`, e os namespaces dele nas notas de
+fidelidade em `server/src/emulator/serviceNamespaces.ts`. Rotas, telas, navegação e
 persistência são geradas a partir da declaração.
 
 **Serviço com telas dedicadas:** crie o módulo em `server/src/<serviço>/` com o service, as rotas e um `SyncAdapter`

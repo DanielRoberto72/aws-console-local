@@ -4,6 +4,9 @@ import Flashbar from '@cloudscape-design/components/flashbar';
 import SideNavigation, { type SideNavigationProps } from '@cloudscape-design/components/side-navigation';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { FidelityPanel } from '../pages/emulator/FidelityPanel';
+import { FidelityBadge } from '../pages/emulator/FidelityBadge';
+import { useFidelity } from './fidelity';
 import { useNotifications } from './notifications';
 import { CATEGORIES, type ServiceEntry } from './services';
 import { useServiceDirectory } from './serviceDirectory';
@@ -35,7 +38,7 @@ export function useFollow() {
   };
 }
 
-function navItems(services: readonly ServiceEntry[]): SideNavigationProps.Item[] {
+function navItems(services: readonly ServiceEntry[], badge: (id: string) => ReactNode): SideNavigationProps.Item[] {
   return [
     { type: 'link', text: 'Página inicial do console', href: '/' },
     { type: 'divider' },
@@ -50,6 +53,7 @@ function navItems(services: readonly ServiceEntry[]): SideNavigationProps.Item[]
             type: 'expandable-link-group',
             text: service.name,
             href: service.links[0]?.href ?? '/',
+            info: badge(service.id),
             items: service.links.map((link) => ({ type: 'link', text: link.text, href: link.href })),
           })),
       }),
@@ -67,7 +71,9 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
   const follow = useFollow();
   const chrome = useMemo<PageChrome>(() => ({ setBreadcrumbs }), []);
   const { services } = useServiceDirectory();
-  const items = useMemo(() => navItems(services), [services]);
+  const fidelity = useFidelity();
+  const items = useMemo(() => navItems(services, (id) => <FidelityBadge summary={fidelity.summary(id)} />), [services, fidelity]);
+  const [toolsOpen, setToolsOpen] = useState(false);
 
   // Destaca o link da seção atual, mesmo em páginas de detalhe (o prefixo mais longo vence).
   const activeHref =
@@ -76,6 +82,7 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
       .sort((a, b) => b.href.length - a.href.length)[0]?.href ??
     services.find((s) => location.pathname.startsWith(s.basePath))?.links[0]?.href ??
     location.pathname;
+  const activeService = services.find((s) => location.pathname.startsWith(s.basePath));
 
   return (
     <PageChromeContext.Provider value={chrome}>
@@ -97,7 +104,12 @@ export function ConsoleLayout({ children }: { children: ReactNode }) {
         breadcrumbs={<BreadcrumbGroup items={breadcrumbs} onFollow={follow} ariaLabel="Navegação estrutural" />}
         notifications={<Flashbar items={notifications.items} stackItems />}
         stickyNotifications
-        toolsHide
+        // O painel "i" mostra a fidelidade do serviço aberto no emulador, como a ajuda do console.
+        toolsHide={!activeService || !fidelity.summary(activeService.id)}
+        toolsOpen={toolsOpen}
+        onToolsChange={({ detail }) => setToolsOpen(detail.open)}
+        tools={activeService && <FidelityPanel serviceId={activeService.id} serviceName={activeService.name} />}
+        ariaLabels={{ tools: 'Fidelidade no emulador', toolsToggle: 'Abrir fidelidade no emulador', toolsClose: 'Fechar fidelidade no emulador' }}
         content={children}
       />
     </PageChromeContext.Provider>
