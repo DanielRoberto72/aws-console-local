@@ -1,0 +1,164 @@
+{
+ "format": "aws-console-local/environment",
+ "formatVersion": 1,
+ "title": "Fan-out de pedidos com SNS e SQS",
+ "description": "Tópico SNS pedidos entregando em duas filas SQS (estoque com fila de mensagens mortas) e numa função Lambda. Publique uma mensagem no tópico e acompanhe a entrega nas filas e no log da função.",
+ "exportedAt": "2026-11-25T23:50:53.253Z",
+ "emulatorVersion": "1.0.589",
+ "tables": {
+  "s3_buckets": [],
+  "s3_objects": [],
+  "dynamodb_tables": [],
+  "dynamodb_items": [],
+  "sqs_queues": [
+   {
+    "name": "estoque",
+    "attributes": {
+     "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"console-local-422dde6ec25222ab\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"sns.amazonaws.com\"},\"Action\":\"sqs:SendMessage\",\"Resource\":\"arn:aws:sqs:us-east-1:000000000000:estoque\",\"Condition\":{\"ArnEquals\":{\"aws:SourceArn\":\"arn:aws:sns:us-east-1:000000000000:pedidos\"}}}]}",
+     "QueueArn": "arn:aws:sqs:us-east-1:000000000000:estoque",
+     "DelaySeconds": "0",
+     "RedrivePolicy": "{\"deadLetterTargetArn\":\"arn:aws:sqs:us-east-1:000000000000:estoque-dlq\",\"maxReceiveCount\":3}",
+     "CreatedTimestamp": "1795650651",
+     "VisibilityTimeout": "30",
+     "MaximumMessageSize": "1048576",
+     "SqsManagedSseEnabled": "true",
+     "LastModifiedTimestamp": "1795650652",
+     "MessageRetentionPeriod": "345600",
+     "ApproximateNumberOfMessages": "0",
+     "ReceiveMessageWaitTimeSeconds": "0",
+     "ApproximateNumberOfMessagesDelayed": "0",
+     "ApproximateNumberOfMessagesNotVisible": "0"
+    }
+   },
+   {
+    "name": "estoque-dlq",
+    "attributes": {
+     "QueueArn": "arn:aws:sqs:us-east-1:000000000000:estoque-dlq",
+     "DelaySeconds": "0",
+     "CreatedTimestamp": "1795650650",
+     "VisibilityTimeout": "30",
+     "MaximumMessageSize": "1048576",
+     "SqsManagedSseEnabled": "true",
+     "LastModifiedTimestamp": "1795650650",
+     "MessageRetentionPeriod": "345600",
+     "ApproximateNumberOfMessages": "0",
+     "ReceiveMessageWaitTimeSeconds": "0",
+     "ApproximateNumberOfMessagesDelayed": "0",
+     "ApproximateNumberOfMessagesNotVisible": "0"
+    }
+   },
+   {
+    "name": "faturamento",
+    "attributes": {
+     "Policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"console-local-422dde6ec25222ab\",\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"sns.amazonaws.com\"},\"Action\":\"sqs:SendMessage\",\"Resource\":\"arn:aws:sqs:us-east-1:000000000000:faturamento\",\"Condition\":{\"ArnEquals\":{\"aws:SourceArn\":\"arn:aws:sns:us-east-1:000000000000:pedidos\"}}}]}",
+     "QueueArn": "arn:aws:sqs:us-east-1:000000000000:faturamento",
+     "DelaySeconds": "0",
+     "CreatedTimestamp": "1795650650",
+     "VisibilityTimeout": "30",
+     "MaximumMessageSize": "1048576",
+     "SqsManagedSseEnabled": "true",
+     "LastModifiedTimestamp": "1795650652",
+     "MessageRetentionPeriod": "345600",
+     "ApproximateNumberOfMessages": "0",
+     "ReceiveMessageWaitTimeSeconds": "0",
+     "ApproximateNumberOfMessagesDelayed": "0",
+     "ApproximateNumberOfMessagesNotVisible": "0"
+    }
+   }
+  ],
+  "stored_resources": [
+   {
+    "service": "iam",
+    "type": "role",
+    "name": "aws-console-local-lambda",
+    "data": {
+     "name": "aws-console-local-lambda",
+     "path": "/service-role/",
+     "description": "Criado pelo Console AWS local",
+     "trustPolicy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+     "inlinePolicies": {
+      "permissoes": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"sqs:*\",\"sns:Publish\",\"dynamodb:*\",\"s3:*\",\"secretsmanager:GetSecretValue\",\"ssm:GetParameter*\",\"s3vectors:*\",\"bedrock:InvokeModel\"],\"Resource\":\"*\"}]}"
+     },
+     "managedPolicyArns": [],
+     "maxSessionDuration": 3600
+    },
+    "blob": null
+   },
+   {
+    "service": "lambda",
+    "type": "function",
+    "name": "registrar-pedido",
+    "data": {
+     "role": "arn:aws:iam::000000000000:role/service-role/aws-console-local-lambda",
+     "handler": "app.handler",
+     "runtime": "python3.12",
+     "timeout": 10,
+     "codeSha256": "0MH5NJRdO95SCzhhriB+NKVQ/qEfKp9r6y/QDqHKWl0=",
+     "memorySize": 128,
+     "description": "Registra no log cada pedido publicado no tópico pedidos",
+     "environment": {},
+     "permissions": [
+      {
+       "sid": "console-local-422dde6ec25222ab",
+       "principal": "sns.amazonaws.com",
+       "sourceArn": "arn:aws:sns:us-east-1:000000000000:pedidos"
+      }
+     ]
+    },
+    "blob": "UEsDBBQAAAAIAFm+eV3AfvuxqAAAAAUBAAAGAAAAYXBwLnB5bY9BDoJADEX3nKJx05mEcAASj2BidElYIFNwDLakMxoTwt0FRuPGLn//+/3191E0wi0IZ5mjDq4Nu4HU0JM45tAKR3pFW2awTCcKSq2oA8+wWYqeosHTJgbMoao/3nVGct4J7Lf8YpDGBZP4Cs8csK7wQCE0PWFtf5R6jqbbHRM9pZR0yDu089qBLotWfpfzLuFK8aEME44q7ZrsJGAJA3F66E9bO2dvUEsBAhQAFAAAAAgAWb55XcB++7GoAAAABQEAAAYAAAAAAAAAAAAAAAAAAAAAAGFwcC5weVBLBQYAAAAAAQABADQAAADMAAAAAAA="
+   },
+   {
+    "service": "sns",
+    "type": "topic",
+    "name": "pedidos",
+    "data": {
+     "Policy": "{\"Version\":\"2008-10-17\",\"Id\":\"__default_policy_ID\",\"Statement\":[{\"Sid\":\"__default_statement_ID\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"*\"},\"Action\":[\"SNS:GetTopicAttributes\",\"SNS:SetTopicAttributes\",\"SNS:AddPermission\",\"SNS:RemovePermission\",\"SNS:DeleteTopic\",\"SNS:Subscribe\",\"SNS:ListSubscriptionsByTopic\",\"SNS:Publish\"],\"Resource\":\"arn:aws:sns:us-east-1:000000000000:pedidos\",\"Condition\":{\"StringEquals\":{\"AWS:SourceOwner\":\"000000000000\"}}}]}",
+     "DisplayName": "Pedidos da loja"
+    },
+    "blob": null
+   },
+   {
+    "service": "sns",
+    "type": "subscription",
+    "name": "pedidos|sqs|arn:aws:sqs:us-east-1:000000000000:faturamento",
+    "data": {
+     "topic": "pedidos",
+     "endpoint": "arn:aws:sqs:us-east-1:000000000000:faturamento",
+     "protocol": "sqs",
+     "attributes": {
+      "RawMessageDelivery": "true"
+     }
+    },
+    "blob": null
+   },
+   {
+    "service": "sns",
+    "type": "subscription",
+    "name": "pedidos|sqs|arn:aws:sqs:us-east-1:000000000000:estoque",
+    "data": {
+     "topic": "pedidos",
+     "endpoint": "arn:aws:sqs:us-east-1:000000000000:estoque",
+     "protocol": "sqs",
+     "attributes": {
+      "RawMessageDelivery": "true"
+     }
+    },
+    "blob": null
+   },
+   {
+    "service": "sns",
+    "type": "subscription",
+    "name": "pedidos|lambda|arn:aws:lambda:us-east-1:000000000000:function:registrar-pedido",
+    "data": {
+     "topic": "pedidos",
+     "endpoint": "arn:aws:lambda:us-east-1:000000000000:function:registrar-pedido",
+     "protocol": "lambda",
+     "attributes": {
+      "RawMessageDelivery": "false"
+     }
+    },
+    "blob": null
+   }
+  ]
+ }
+}

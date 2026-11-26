@@ -1,0 +1,184 @@
+{
+ "format": "aws-console-local/environment",
+ "formatVersion": 1,
+ "title": "Fluxo de aprovação com Step Functions",
+ "description": "Máquina de estados que valida e aprova pedidos com funções Lambda, uma regra do EventBridge que reage a pedidos criados e um agendamento diário. Inicie uma execução com {\"id\": \"1\", \"total\": 250}.",
+ "exportedAt": "2026-11-25T23:51:25.295Z",
+ "emulatorVersion": "1.0.589",
+ "tables": {
+  "s3_buckets": [],
+  "s3_objects": [],
+  "dynamodb_tables": [],
+  "dynamodb_items": [],
+  "sqs_queues": [],
+  "stored_resources": [
+   {
+    "service": "iam",
+    "type": "role",
+    "name": "aws-console-local-lambda",
+    "data": {
+     "name": "aws-console-local-lambda",
+     "path": "/service-role/",
+     "description": "Criado pelo Console AWS local",
+     "trustPolicy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+     "inlinePolicies": {
+      "permissoes": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"sqs:*\",\"sns:Publish\",\"dynamodb:*\",\"s3:*\",\"secretsmanager:GetSecretValue\",\"ssm:GetParameter*\",\"s3vectors:*\",\"bedrock:InvokeModel\"],\"Resource\":\"*\"}]}"
+     },
+     "managedPolicyArns": [],
+     "maxSessionDuration": 3600
+    },
+    "blob": null
+   },
+   {
+    "service": "iam",
+    "type": "role",
+    "name": "aws-console-local-scheduler",
+    "data": {
+     "name": "aws-console-local-scheduler",
+     "path": "/service-role/",
+     "description": "Criado pelo Console AWS local",
+     "trustPolicy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"scheduler.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+     "inlinePolicies": {
+      "permissoes": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"lambda:InvokeFunction\",\"sqs:SendMessage\",\"sns:Publish\",\"states:StartExecution\",\"events:PutEvents\"],\"Resource\":\"*\"}]}"
+     },
+     "managedPolicyArns": [],
+     "maxSessionDuration": 3600
+    },
+    "blob": null
+   },
+   {
+    "service": "iam",
+    "type": "role",
+    "name": "aws-console-local-stepfunctions",
+    "data": {
+     "name": "aws-console-local-stepfunctions",
+     "path": "/service-role/",
+     "description": "Criado pelo Console AWS local",
+     "trustPolicy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"states.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+     "inlinePolicies": {
+      "permissoes": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"lambda:InvokeFunction\",\"sqs:SendMessage\",\"sns:Publish\",\"dynamodb:*\",\"events:PutEvents\",\"states:StartExecution\"],\"Resource\":\"*\"}]}"
+     },
+     "managedPolicyArns": [],
+     "maxSessionDuration": 3600
+    },
+    "blob": null
+   },
+   {
+    "service": "lambda",
+    "type": "function",
+    "name": "aprovar-pedido",
+    "data": {
+     "role": "arn:aws:iam::000000000000:role/service-role/aws-console-local-lambda",
+     "handler": "app.handler",
+     "runtime": "python3.12",
+     "timeout": 10,
+     "codeSha256": "mWBVP1UNkFHrKAhfFxkRPkpB9DBsBWFwJXqKkGzvng4=",
+     "memorySize": 128,
+     "description": "Marca o pedido como aprovado",
+     "environment": {},
+     "permissions": []
+    },
+    "blob": "UEsDBBQAAAAIAGu+eV3ZT/WfQwAAAEgAAAAGAAAAYXBwLnB5S0lNU8hIzEvJSS3SSC1LzSvRUUjOzytJrSjRtOJSAIKi1JLSojyFai0tqLR6cUliSWmxupWCumNAkH+Yo4u/ei0XAFBLAQIUABQAAAAIAGu+eV3ZT/WfQwAAAEgAAAAGAAAAAAAAAAAAAAAAAAAAAABhcHAucHlQSwUGAAAAAAEAAQA0AAAAZwAAAAAA"
+   },
+   {
+    "service": "lambda",
+    "type": "function",
+    "name": "gerar-relatorio",
+    "data": {
+     "role": "arn:aws:iam::000000000000:role/service-role/aws-console-local-lambda",
+     "handler": "app.handler",
+     "runtime": "python3.12",
+     "timeout": 10,
+     "codeSha256": "C/4LZK9sXdDdmnBZATmVStsAJUZzoTD5xxw1G1mDkRI=",
+     "memorySize": 128,
+     "description": "Executada pelo agendamento diário",
+     "environment": {},
+     "permissions": []
+    },
+    "blob": "UEsDBBQAAAAIAGu+eV2RgNg9dAAAAI0AAAAGAAAAYXBwLnB5PczBDcIwDEbhe6bwLYlUdYCOgVggIn/BorEr4wISYipGYLFWPfSd3unjNqs51eJwbgihYqRbkTrBEp4Q7+ii4nh7HgJtzcbiKZ4wFf//jJWusFKV0GJ3QP0xoq+Ue37oqNaKp5x3xuCLCX2i3uNAZ1vwDStQSwECFAAUAAAACABrvnldkYDYPXQAAACNAAAABgAAAAAAAAAAAAAAAAAAAAAAYXBwLnB5UEsFBgAAAAABAAEANAAAAJgAAAAAAA=="
+   },
+   {
+    "service": "lambda",
+    "type": "function",
+    "name": "validar-pedido",
+    "data": {
+     "role": "arn:aws:iam::000000000000:role/service-role/aws-console-local-lambda",
+     "handler": "app.handler",
+     "runtime": "python3.12",
+     "timeout": 10,
+     "codeSha256": "QSiWF0MNyZMLGHIoQNWY3QTuhZPtHOtzbdu2JiEYkRU=",
+     "memorySize": 128,
+     "description": "Confere o total do pedido",
+     "environment": {},
+     "permissions": [
+      {
+       "sid": "console-local-30a63a5654ac232e",
+       "principal": "events.amazonaws.com",
+       "sourceArn": "arn:aws:events:us-east-1:000000000000:rule/loja/pedido-criado"
+      }
+     ]
+    },
+    "blob": "UEsDBBQAAAAIAGq+eV3bPy3jbwAAAJAAAAAGAAAAYXBwLnB5TYxBCoMwFET3nuLvYkTK71ZoD9EbfMzYCiEp8RsE8e4GdeEsZjHzeA4D/SQ4j1QjI2hLfQyKRW1XUYlGFU8vGnwUPZHHF1qb4zAtsbUHmKBzCrQ2zeUxWfzooukux5u4jP+Efpzkg1z6fj6Zeat2UEsBAhQAFAAAAAgAar55Xds/LeNvAAAAkAAAAAYAAAAAAAAAAAAAAAAAAAAAAGFwcC5weVBLBQYAAAAAAQABADQAAACTAAAAAAA="
+   },
+   {
+    "service": "stepfunctions",
+    "type": "state-machine",
+    "name": "aprovacao-de-pedido",
+    "data": {
+     "name": "aprovacao-de-pedido",
+     "type": "STANDARD",
+     "roleArn": "arn:aws:iam::000000000000:role/service-role/aws-console-local-stepfunctions",
+     "definition": "{\"Comment\": \"Valida o pedido, aprova automaticamente até R$ 1.000 e recusa os inválidos\", \"StartAt\": \"Validar\", \"States\": {\"Validar\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:lambda:us-east-1:000000000000:function:validar-pedido\", \"Next\": \"Valido?\"}, \"Valido?\": {\"Type\": \"Choice\", \"Choices\": [{\"Variable\": \"$.valido\", \"BooleanEquals\": false, \"Next\": \"Recusado\"}, {\"Variable\": \"$.precisaRevisao\", \"BooleanEquals\": true, \"Next\": \"AguardandoRevisao\"}], \"Default\": \"Aprovar\"}, \"Aprovar\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:lambda:us-east-1:000000000000:function:aprovar-pedido\", \"End\": true}, \"AguardandoRevisao\": {\"Type\": \"Pass\", \"Result\": \"Pedido acima de R$ 1.000 enviado para revisão\", \"ResultPath\": \"$.observacao\", \"End\": true}, \"Recusado\": {\"Type\": \"Fail\", \"Error\": \"PedidoInvalido\", \"Cause\": \"O total do pedido precisa ser maior que zero\"}}}"
+    },
+    "blob": null
+   },
+   {
+    "service": "events",
+    "type": "bus",
+    "name": "loja",
+    "data": {},
+    "blob": null
+   },
+   {
+    "service": "events",
+    "type": "rule",
+    "name": "loja|pedido-criado",
+    "data": {
+     "rule": {
+      "bus": "loja",
+      "name": "pedido-criado",
+      "state": "ENABLED",
+      "description": "Valida cada pedido criado",
+      "eventPattern": "{\"source\": [\"loja.pedidos\"], \"detail-type\": [\"PedidoCriado\"]}",
+      "scheduleExpression": null
+     },
+     "targets": [
+      {
+       "id": "validar",
+       "arn": "arn:aws:lambda:us-east-1:000000000000:function:validar-pedido",
+       "input": null
+      }
+     ]
+    },
+    "blob": null
+   },
+   {
+    "service": "scheduler",
+    "type": "schedule",
+    "name": "default|relatorio-diario",
+    "data": {
+     "name": "relatorio-diario",
+     "group": "default",
+     "input": null,
+     "state": "ENABLED",
+     "roleArn": "arn:aws:iam::000000000000:role/service-role/aws-console-local-scheduler",
+     "timezone": "UTC",
+     "targetArn": "arn:aws:lambda:us-east-1:000000000000:function:gerar-relatorio",
+     "expression": "cron(0 8 * * ? *)",
+     "description": ""
+    },
+    "blob": null
+   }
+  ]
+ }
+}

@@ -11,7 +11,8 @@ services:
     ports:
       - "127.0.0.1:9297:9297"
     volumes:
-      # Versão do emulador em execução, lida pelo app (o emulador não a expõe pela API).
+      # Pasta compartilhada com o app: versão do emulador em uso e pedidos de reinício
+      # (o console reinicia o emulador ao importar, reiniciar ou carregar um ambiente).
       - emulator-info:/run/emulator-info
     restart: unless-stopped
     healthcheck:
@@ -43,14 +44,14 @@ services:
       DATABASE_URL: postgres://console:console@db:5432/console
       EMULATOR_ENDPOINT: https://emulator:9297
       SYNC_INTERVAL_MS: "15000"
-      # Portas fixas no Mac para bancos, caches e brokers do emulador (ver "Endpoint no Mac").
+      # Portas fixas no Mac para bancos, caches e brokers do emulador (ver "Endpoints locais" no README).
       FORWARD_PORTS: "4510-4549"
-      EMULATOR_VERSION_FILE: /run/emulator-info/version.txt
+      EMULATOR_INFO_DIR: /run/emulator-info
     ports:
       - "127.0.0.1:8080:8080"
       - "127.0.0.1:4510-4549:4510-4549"
     volumes:
-      - emulator-info:/run/emulator-info:ro
+      - emulator-info:/run/emulator-info
     depends_on:
       db:
         condition: service_healthy

@@ -22,8 +22,12 @@ AWS em erros, limites e detalhes.
   reinicia. Isso inclui recursos criados fora do console, pela AWS CLI, por SDKs ou pelo Terraform.
 - **Endpoints locais fixos.** Bancos, caches e brokers (RDS, ElastiCache, Redshift, OpenSearch, MQ, AppSync) recebem
   uma porta fixa em `localhost`, que não muda entre reinícios do emulador.
+- **Ambientes e modelos de laboratório.** O ambiente inteiro pode ser exportado para um arquivo, importado em outra
+  máquina ou reiniciado do zero, e há cenários prontos para praticar.
 - **Fidelidade por serviço.** Cada serviço mostra a fração dos testes do AWS Emulator em que ele responde como a AWS,
   e o que falha, na versão do emulador em uso.
+- **Atualização com volta.** Um script atualiza o emulador para a versão mais recente e guarda a anterior, e a página
+  inicial mostra o que muda nas notas antes de atualizar.
 
 ## Casos de uso
 
@@ -34,6 +38,8 @@ O Console AWS local é indicado para:
   KMS e Secrets Manager funcionam de verdade, incluindo as entregas entre eles.
 - Prática com dados: SQL no RDS (PostgreSQL) e no Redshift, Redis, Athena sobre tabelas do Glue, Kinesis e OpenSearch.
 - Estudo dos conceitos cobrados em certificações.
+- Turmas e grupos de estudo: um ambiente montado por uma pessoa é exportado e importado pelas outras, que começam do
+  mesmo ponto.
 
 O Console AWS local não substitui uma conta da AWS para:
 
@@ -160,16 +166,21 @@ A página inicial mostra o uso consolidado, o estado do emulador e a atividade r
 ## Versão e fidelidade
 
 A página inicial mostra a versão do AWS Emulator em uso e a mais recente publicada. Quando há versão nova, ela também
-mostra os comandos para atualizar:
+mostra o comando para atualizar e quais notas de fidelidade mudam, serviço por serviço.
 
 ```bash
-docker compose build --no-cache emulator
-docker compose up -d emulator
+scripts/update-emulator.sh              # atualiza para a versão mais recente
+scripts/update-emulator.sh --rollback   # volta para a versão anterior
 ```
 
-O estado salvo é recriado no emulador novo, como em qualquer reinício. A AWS publica apenas a versão mais recente do
-pacote, sem URLs por versão. Por isso, cada build usa a versão do dia e não é possível voltar para uma anterior, a não
-ser que a imagem antiga tenha sido guardada (por exemplo, com `docker tag`).
+O script guarda a imagem em uso como `aws-console-local-emulator:previous` antes de reconstruir, e não reconstrói se o
+emulador já estiver na versão mais recente (`--force` reconstrói mesmo assim). O estado salvo é recriado no emulador
+novo, como em qualquer reinício. A AWS publica apenas a versão mais recente do pacote, sem URLs por versão: a imagem
+guardada pelo script é a única forma de voltar. Só a última versão anterior é guardada, e `--rollback` de novo desfaz
+a volta.
+
+Sem o script, o mesmo pode ser feito com `docker compose build --no-cache emulator` e `docker compose up -d emulator`,
+mas sem a imagem anterior guardada.
 
 Cada versão do emulador publica no GitHub um arquivo de notas de fidelidade (`scores.json.gz`) com dezenas de milhares
 de testes que comparam o emulador com a AWS. O console usa as notas da versão em uso:
@@ -249,6 +260,31 @@ VPC recriada, a instância na sub-rede recriada, o alias do KMS aponta para a ch
 nova. Recursos criados por outro serviço (com tags `aws:`, como os de uma stack ou as instâncias de um grupo do Auto
 Scaling) não são salvos separadamente, para não serem duplicados.
 
+## Ambientes e modelos de laboratório
+
+A página **Ambiente** (link no fim da navegação lateral) reúne as operações sobre o ambiente inteiro:
+
+- **Exportar** baixa um arquivo `.json.gz` com tudo o que o console guarda: recursos, código das funções Lambda,
+  objetos do S3 e itens do DynamoDB. O arquivo inclui os valores de segredos, parâmetros e senhas guardados.
+- **Importar** substitui o ambiente atual pelo de um arquivo exportado, em outra máquina ou em outro momento.
+- **Modelos de laboratório** são ambientes prontos em `server/templates/`:
+  - *Fan-out de pedidos com SNS e SQS*: tópico entregando em duas filas (uma com fila de mensagens mortas) e numa
+    função Lambda.
+  - *Catálogo de produtos*: tabela DynamoDB com itens, bucket S3 com imagens, parâmetros, um segredo e uma função
+    configurada por variáveis de ambiente.
+  - *Fluxo de aprovação com Step Functions*: máquina de estados com funções Lambda, regra do EventBridge e agendamento.
+- **Reiniciar o ambiente** apaga todos os recursos e começa do zero.
+
+Importar, carregar um modelo e reiniciar substituem o ambiente inteiro, com confirmação. O banco é trocado e o
+emulador é reiniciado pelo próprio container (`emulator/start.sh` supervisiona o processo e atende pedidos do `app`
+pelo volume compartilhado). O emulador novo recebe o estado do banco pela restauração de sempre, em alguns segundos.
+Enquanto o reinício não acontece, nada é copiado da instância antiga para o banco. A atividade recente, as portas dos
+endpoints locais e as notas de fidelidade não fazem parte do ambiente e são mantidas.
+
+O arquivo exportado guarda o que o console salva, com as mesmas limitações da persistência: mensagens das filas,
+dados dentro de bancos e caches e o histórico de execuções não vão junto. Os modelos são gerados por
+`scripts/build-templates.py`, que monta cada cenário pela API do console num ambiente vazio e o exporta.
+
 ## Limitações conhecidas
 
 - Alterações feitas nos últimos segundos antes de uma queda do emulador podem ser perdidas (janela de até 15 s,
@@ -271,6 +307,10 @@ Scaling) não são salvos separadamente, para não serem duplicados.
   novo.
 - Se um recurso do catálogo não puder ser recriado, os demais continuam e a falha aparece na atividade recente
   (`Restore:<tipo>`). O recurso não é recriado de novo, para evitar duplicar recursos identificados por ID.
+- Exportar e importar leem o ambiente inteiro em memória: arquivos até 200 MB, adequados a ambientes de
+  desenvolvimento e estudo.
+- Uma stack criada antes desta versão precisa reconstruir o emulador (`docker compose up -d --build`) para que o
+  console consiga reiniciá-lo ao importar, carregar modelos ou reiniciar o ambiente.
 - O editor de código do Lambda mostra só arquivos de texto. Se o pacote tiver binários, implantar pelo editor gera um
   pacote sem eles. Nesse caso, use **Carregar .zip** (o console exibe um aviso).
 
@@ -297,8 +337,12 @@ Validação:
 ```bash
 npm run typecheck
 npm test
-./scripts/check-persistence.sh   # ponta a ponta, contra a stack do Docker Compose
+./scripts/check-persistence.sh       # persistência ponta a ponta, contra a stack do Docker Compose
+python3 scripts/check-environment.py # exportar, importar, reiniciar e modelos, contra a mesma stack
 ```
+
+Os dois scripts de ponta a ponta preservam o ambiente atual. O GitHub Actions (`.github/workflows/ci.yml`) roda
+tipos, testes e build, além do ShellCheck nos scripts, a cada push e pull request.
 
 ## Estrutura do repositório
 
@@ -307,7 +351,7 @@ npm test
 ├── docker-compose.yml       # emulador, Postgres e app
 ├── Dockerfile               # app: API (Fastify) e frontend compilado
 ├── emulator/Dockerfile      # imagem do AWS Emulator (no macOS ele só roda em container)
-├── emulator/start.sh        # inicia o emulador e registra a versão em uso para o app
+├── emulator/start.sh        # registra a versão em uso e reinicia o emulador quando o app pede
 ├── server/src/
 │   ├── <serviço>/           # por serviço: operações no emulador (*Service), rotas HTTP e persistência (*Sync)
 │   ├── iam/                 # usuários, grupos, funções e políticas; funções padrão
@@ -317,13 +361,15 @@ npm test
 │   │   └── services/        # definições dos serviços do catálogo (EC2, RDS, Cognito, KMS...)
 │   ├── forwarding/          # repasse TCP das portas internas do emulador para portas fixas do host
 │   ├── emulator/            # versão do emulador, versão mais recente e notas de fidelidade por serviço
+│   ├── environment/         # exportar, importar, reiniciar o ambiente e modelos de laboratório
 │   ├── sync/                # monitor que decide entre restaurar e espelhar
 │   └── overview/ activity/  # uso consolidado e histórico de ações
+├── server/templates/        # modelos de laboratório (ambientes exportados)
 ├── web/src/
 │   ├── layout/              # TopNavigation, SideNavigation, breadcrumbs e notificações
-│   └── pages/               # telas por serviço; pages/catalog/ tem as telas genéricas do catálogo e
-│                            # pages/emulator/ a versão e a fidelidade
-└── scripts/                 # verificação de ponta a ponta da persistência
+│   └── pages/               # telas por serviço; pages/catalog/ tem as telas genéricas do catálogo,
+│                            # pages/emulator/ a versão e a fidelidade e pages/environment/ o ambiente
+└── scripts/                 # atualização do emulador, geração dos modelos e verificações de ponta a ponta
 ```
 
 ## Adicionar um serviço

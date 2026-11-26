@@ -18,6 +18,7 @@ ENV NODE_ENV=production \
 COPY --from=build /app/node_modules node_modules
 COPY --from=build /app/server/package.json server/
 COPY --from=build /app/server/dist server/dist
+COPY --from=build /app/server/templates server/templates
 COPY --from=build /app/web/dist web/dist
 USER node
 EXPOSE 8080

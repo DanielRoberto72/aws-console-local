@@ -20,7 +20,7 @@ const { app, sync, forwarding } = await buildApp({
   probe: () => probeEmulator(config.emulatorEndpoint, probeAgent),
   syncIntervalMs: config.syncIntervalMs,
   webDistDir: config.webDistDir,
-  emulatorVersionFile: config.emulatorVersionFile,
+  emulatorInfoDir: config.emulatorInfoDir,
   forwarding: config.forwardPorts ? { ports: config.forwardPorts, listenHost: config.host } : undefined,
 });
 

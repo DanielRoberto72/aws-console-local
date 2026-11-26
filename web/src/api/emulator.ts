@@ -48,7 +48,16 @@ interface Published {
 export type FidelityOverview = (Published & { services: Record<string, FidelitySummary> }) | Unavailable;
 export type ServiceFidelityResponse = (Published & { service: FidelityDetail }) | Unavailable;
 
+export interface ScoreChange {
+  service: string;
+  before: number | null;
+  after: number | null;
+}
+
+export type FidelityChange = { status: 'ok'; from: string; to: string; changes: ScoreChange[] } | Unavailable;
+
 export const emulatorApi = {
+  fidelityChange: (signal?: AbortSignal) => request<FidelityChange>('/api/emulator/fidelity-change', { signal }),
   status: (signal?: AbortSignal) => request<EmulatorVersionStatus>('/api/emulator', { signal }),
   fidelity: (signal?: AbortSignal) => request<FidelityOverview>('/api/emulator/fidelity', { signal }),
   serviceFidelity: (service: string, signal?: AbortSignal) => request<ServiceFidelityResponse>(`/api/emulator/fidelity/${encode(service)}`, { signal }),

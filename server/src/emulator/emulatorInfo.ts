@@ -1,11 +1,11 @@
-import { readFile } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
 import type { FastifyBaseLogger } from 'fastify';
 import type { Db } from '../db/pool.js';
+import type { EmulatorControl } from '../environment/emulatorControl.js';
 import { describeError } from '../http/errors.js';
-import { aggregateScores, type FidelityReport, type ScoresDocument } from './fidelity.js';
+import { aggregateScores, compareReports, type FidelityReport, type ScoreChange, type ScoresDocument } from './fidelity.js';
 import { SERVICE_NAMESPACES } from './serviceNamespaces.js';
-import { compareVersions, normalizeVersion, parseVersionOutput, type InstalledVersion } from './versions.js';
+import { compareVersions, normalizeVersion, type InstalledVersion } from './versions.js';
 
 /** Mesmo canal do emulator/Dockerfile: a URL sempre aponta para o pacote mais recente. */
 const PACKAGE_URL = 'https://downloads.aws.com/aws-emulator/packages/aws-emulator/LTS/latest';
@@ -29,7 +29,9 @@ export interface EmulatorVersionStatus {
   releasesUrl: string;
 }
 
-export type FidelityResult = { status: 'ok'; report: FidelityReport; releaseUrl: string } | { status: 'unavailable'; reason: string };
+type Unavailable = { status: 'unavailable'; reason: string };
+export type FidelityResult = { status: 'ok'; report: FidelityReport; releaseUrl: string } | Unavailable;
+export type FidelityChangeResult = { status: 'ok'; from: string; to: string; changes: ScoreChange[] } | Unavailable;
 
 class UnavailableError extends Error {}
 
@@ -48,17 +50,12 @@ export class EmulatorInfo {
 
   constructor(
     private readonly db: Db,
-    private readonly versionFile: string | undefined,
+    private readonly control: EmulatorControl,
     private readonly log: FastifyBaseLogger,
   ) {}
 
-  async installed(): Promise<InstalledVersion | null> {
-    if (!this.versionFile) return null;
-    try {
-      return parseVersionOutput(await readFile(this.versionFile, 'utf8'));
-    } catch {
-      return null;
-    }
+  installed(): Promise<InstalledVersion | null> {
+    return this.control.installedVersion();
   }
 
   async status(): Promise<EmulatorVersionStatus> {
@@ -75,7 +72,20 @@ export class EmulatorInfo {
   async fidelity(): Promise<FidelityResult> {
     const installed = await this.installed();
     if (!installed) return { status: 'unavailable', reason: 'A versão do emulador em uso não é conhecida (o app roda fora do Docker Compose?).' };
-    const { version } = installed;
+    return this.fidelityOf(installed.version);
+  }
+
+  /** O que muda nas notas ao atualizar para a versão mais recente; só baixa se houver atualização. */
+  async fidelityChange(): Promise<FidelityChangeResult> {
+    const status = await this.status();
+    if (!status.updateAvailable || !status.installed || !status.latest) return { status: 'unavailable', reason: 'Não há versão mais recente do emulador.' };
+    const [before, after] = await Promise.all([this.fidelityOf(status.installed.version), this.fidelityOf(status.latest.version)]);
+    if (before.status !== 'ok') return before;
+    if (after.status !== 'ok') return after;
+    return { status: 'ok', from: before.report.version, to: after.report.version, changes: compareReports(before.report, after.report) };
+  }
+
+  private async fidelityOf(version: string): Promise<FidelityResult> {
     const failure = this.failures.get(version);
     if (failure && failure.until > Date.now()) return { status: 'unavailable', reason: failure.reason };
     try {

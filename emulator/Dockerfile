@@ -1,6 +1,6 @@
 # Imagem do AWS Emulator, seguindo o guia oficial (no macOS ele só roda em container).
 # A AWS não publica imagem pronta nem URL versionada do pacote: o RPM vem de "LTS/latest".
-# Para atualizar o emulador, reconstrua sem cache: docker compose build --no-cache emulator
+# Para atualizar o emulador, use scripts/update-emulator.sh (guarda a imagem atual para poder voltar).
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
 
 ARG TARGETARCH

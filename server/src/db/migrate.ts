@@ -81,6 +81,9 @@ CREATE TABLE IF NOT EXISTS sync_state (
   last_error text
 );
 INSERT INTO sync_state (id) VALUES (1) ON CONFLICT DO NOTHING;
+-- Instância do emulador descartada depois de o banco ser substituído (ver decideSyncAction).
+ALTER TABLE sync_state ADD COLUMN IF NOT EXISTS discarded_boot_id text;
+ALTER TABLE sync_state ADD COLUMN IF NOT EXISTS restart_requested_at timestamptz;
 `;
 
 export async function migrate(db: Db): Promise<void> {

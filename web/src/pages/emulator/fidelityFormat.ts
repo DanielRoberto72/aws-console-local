@@ -28,3 +28,12 @@ export function behaviorLabel(id: string): { title: string; services: string[] }
   const services = id.slice(0, dot).split('__').filter((s) => s && !s.startsWith('_'));
   return { title: id.slice(dot + 1), services };
 }
+
+/** Diferença entre duas notas em pontos percentuais, com sinal ("+3,2 pontos"). */
+export function changeText(before: number | null, after: number | null): string {
+  if (before === null) return 'Passa a ter testes';
+  if (after === null) return 'Deixa de ter testes';
+  const points = Math.round((after - before) * 1000) / 10;
+  const sign = points > 0 ? '+' : points < 0 ? '−' : '';
+  return `${sign}${Math.abs(points).toLocaleString('pt-BR', { minimumFractionDigits: 1 })} pontos`;
+}

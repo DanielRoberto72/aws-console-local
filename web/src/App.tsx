@@ -4,6 +4,7 @@ import { NotificationsProvider } from './layout/notifications';
 import { FidelityProvider } from './layout/fidelity';
 import { ServiceDirectoryProvider } from './layout/serviceDirectory';
 import { ActivityPage } from './pages/activity/ActivityPage';
+import { EnvironmentPage } from './pages/environment/EnvironmentPage';
 import { CatalogItemPage, CatalogServiceRedirect, CatalogToolsPage, CatalogTypePage } from './pages/catalog/CatalogPages';
 import { ModelsPage } from './pages/bedrock/ModelsPage';
 import { PlaygroundPage } from './pages/bedrock/PlaygroundPage';
@@ -67,6 +68,7 @@ export function App() {
             <Routes>
               <Route path="/" element={<ConsoleHome />} />
               <Route path="/activity" element={<ActivityPage />} />
+              <Route path="/environment" element={<EnvironmentPage />} />
               <Route path="/iam" element={<Navigate to="/iam/home" replace />} />
               <Route path="/iam/home" element={<IamDashboardPage />} />
               <Route path="/iam/users" element={<UsersPage />} />

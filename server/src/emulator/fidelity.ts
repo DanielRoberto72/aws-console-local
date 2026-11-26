@@ -103,3 +103,27 @@ export function aggregateScores(version: string, doc: ScoresDocument, namespaces
   }
   return { version, scoredAt: doc.scoredAt ?? null, services };
 }
+
+export interface ScoreChange {
+  service: string;
+  before: number | null;
+  after: number | null;
+}
+
+/** Diferença mínima para uma nota contar como alterada (meio ponto percentual). */
+const MIN_CHANGE = 0.005;
+
+/** Serviços cuja nota muda entre duas versões, das que mais melhoram para as que mais pioram. */
+export function compareReports(before: FidelityReport, after: FidelityReport): ScoreChange[] {
+  const services = new Set([...Object.keys(before.services), ...Object.keys(after.services)]);
+  const changes: ScoreChange[] = [];
+  for (const service of services) {
+    const a = before.services[service]?.score ?? null;
+    const b = after.services[service]?.score ?? null;
+    if (a === null && b === null) continue;
+    if (a !== null && b !== null && Math.abs(b - a) < MIN_CHANGE) continue;
+    changes.push({ service, before: a, after: b });
+  }
+  const delta = (c: ScoreChange) => (c.after ?? 0) - (c.before ?? 0);
+  return changes.sort((x, y) => delta(y) - delta(x) || x.service.localeCompare(y.service));
+}

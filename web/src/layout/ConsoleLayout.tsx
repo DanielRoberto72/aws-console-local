@@ -59,6 +59,7 @@ function navItems(services: readonly ServiceEntry[], badge: (id: string) => Reac
       }),
     ).filter((group) => group.type === 'section-group' && group.items.length > 0),
     { type: 'divider' },
+    { type: 'link', text: 'Ambiente', href: '/environment' },
     { type: 'link', text: 'Atividade recente', href: '/activity' },
   ];
 }

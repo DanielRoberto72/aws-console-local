@@ -3,7 +3,9 @@ import { request } from './http';
 export interface SyncStatus {
   emulator: 'unknown' | 'online' | 'offline';
   emulatorReason: string | null;
-  phase: 'idle' | 'restoring' | 'snapshotting';
+  phase: 'idle' | 'restoring' | 'snapshotting' | 'awaiting-restart';
+  /** Quando o console pediu o reinício do emulador que ainda não aconteceu. */
+  restartRequestedAt: string | null;
   lastRestoreAt: string | null;
   lastSnapshotAt: string | null;
   lastError: string | null;

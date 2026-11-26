@@ -7,8 +7,10 @@ import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import { emulatorApi } from '../../api/emulator';
 import { useRemote } from '../../hooks/useRemote';
 import { useFidelity } from '../../layout/fidelity';
+import { FidelityChanges } from './FidelityChanges';
 
-const UPDATE_COMMANDS = 'docker compose build --no-cache emulator\ndocker compose up -d emulator';
+const UPDATE_COMMAND = 'scripts/update-emulator.sh';
+const ROLLBACK_COMMAND = 'scripts/update-emulator.sh --rollback';
 
 /** Versão do emulador em uso, a mais recente publicada e o estado das notas de fidelidade. */
 export function EmulatorVersion() {
@@ -43,7 +45,11 @@ export function EmulatorVersion() {
             <span>
               Em uso: {data.installed.version}. Para atualizar, rode na pasta do projeto (o estado salvo é recriado no emulador novo):
             </span>
-            <pre className="log-output">{UPDATE_COMMANDS}</pre>
+            <pre className="log-output">{UPDATE_COMMAND}</pre>
+            <span>
+              O script guarda a imagem atual. Se a versão nova der problema, volte com <code>{ROLLBACK_COMMAND}</code>.
+            </span>
+            <FidelityChanges />
           </SpaceBetween>
         </Alert>
       )}

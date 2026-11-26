@@ -54,6 +54,7 @@ const resourceTypeLabel = (service: string, type: string) =>
   SERVICE_TYPE_LABELS[`${service}:${type}`] ?? RESOURCE_TYPE_LABELS[type] ?? type;
 
 function EmulatorState({ sync }: { sync: SyncStatus }) {
+  if (sync.phase === 'awaiting-restart') return <StatusIndicator type="in-progress">Reiniciando para trocar o ambiente</StatusIndicator>;
   if (sync.emulator === 'offline') {
     return <StatusIndicator type="error">Offline{sync.emulatorReason ? ` (${sync.emulatorReason})` : ''}</StatusIndicator>;
   }

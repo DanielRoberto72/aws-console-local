@@ -1,0 +1,288 @@
+{
+ "format": "aws-console-local/environment",
+ "formatVersion": 1,
+ "title": "Catálogo de produtos",
+ "description": "Tabela DynamoDB com produtos, bucket S3 com imagens, parâmetros do Systems Manager, um segredo e uma função Lambda configurada por variáveis de ambiente. Bom para praticar consultas pela CLI e pelos SDKs.",
+ "exportedAt": "2026-11-25T23:51:11.724Z",
+ "emulatorVersion": "1.0.589",
+ "tables": {
+  "s3_buckets": [
+   {
+    "name": "catalogo-imagens",
+    "created_at": "2026-11-25T23:51:10.000Z"
+   }
+  ],
+  "s3_objects": [
+   {
+    "bucket": "catalogo-imagens",
+    "key": "LEIAME.txt",
+    "etag": "\"66d4134f4ef3a9ac9cd1476a520bcb2f\"",
+    "size": 50,
+    "content_type": "text/plain",
+    "last_modified": "2026-11-25T23:51:10.000Z",
+    "body": "SW1hZ2VucyBkb3MgcHJvZHV0b3MgZGEgdGFiZWxhIER5bmFtb0RCIHByb2R1dG9zLgo="
+   },
+   {
+    "bucket": "catalogo-imagens",
+    "key": "produtos/p-001.svg",
+    "etag": "\"032359f0e6121f5a77b2ee3cbe083c39\"",
+    "size": 201,
+    "content_type": "image/svg+xml",
+    "last_modified": "2026-11-25T23:51:10.000Z",
+    "body": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2U4ZjBmZSIvPjx0ZXh0IHg9IjEwMCIgeT0iNjUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNhbmVjYSBkZSBjZXLDom1pY2E8L3RleHQ+PC9zdmc+"
+   },
+   {
+    "bucket": "catalogo-imagens",
+    "key": "produtos/p-002.svg",
+    "etag": "\"7dbc552bff23a62ea9bb15061a26d5b5\"",
+    "size": 198,
+    "content_type": "image/svg+xml",
+    "last_modified": "2026-11-25T23:51:10.000Z",
+    "body": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2U4ZjBmZSIvPjx0ZXh0IHg9IjEwMCIgeT0iNjUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNhbWlzZXRhIGLDoXNpY2E8L3RleHQ+PC9zdmc+"
+   },
+   {
+    "bucket": "catalogo-imagens",
+    "key": "produtos/p-003.svg",
+    "etag": "\"76fe004d20ebcdf1a17bf67d62c6ea57\"",
+    "size": 198,
+    "content_type": "image/svg+xml",
+    "last_modified": "2026-11-25T23:51:10.000Z",
+    "body": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2U4ZjBmZSIvPjx0ZXh0IHg9IjEwMCIgeT0iNjUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkdhcnJhZmEgdMOpcm1pY2E8L3RleHQ+PC9zdmc+"
+   },
+   {
+    "bucket": "catalogo-imagens",
+    "key": "produtos/p-004.svg",
+    "etag": "\"9ef71bb6052dba008fb919d3104621cc\"",
+    "size": 201,
+    "content_type": "image/svg+xml",
+    "last_modified": "2026-11-25T23:51:10.000Z",
+    "body": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2U4ZjBmZSIvPjx0ZXh0IHg9IjEwMCIgeT0iNjUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk1vY2hpbGEgZGUgbm90ZWJvb2s8L3RleHQ+PC9zdmc+"
+   },
+   {
+    "bucket": "catalogo-imagens",
+    "key": "produtos/p-005.svg",
+    "etag": "\"e3c415397c8856273ef27ffa6ee19c87\"",
+    "size": 200,
+    "content_type": "image/svg+xml",
+    "last_modified": "2026-11-25T23:51:10.000Z",
+    "body": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTIwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2U4ZjBmZSIvPjx0ZXh0IHg9IjEwMCIgeT0iNjUiIGZvbnQtc2l6ZT0iMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNhZGVybm8gcG9udGlsaGFkbzwvdGV4dD48L3N2Zz4="
+   }
+  ],
+  "dynamodb_tables": [
+   {
+    "name": "produtos",
+    "create_input": {
+     "KeySchema": [
+      {
+       "KeyType": "HASH",
+       "AttributeName": "id"
+      }
+     ],
+     "TableName": "produtos",
+     "BillingMode": "PAY_PER_REQUEST",
+     "AttributeDefinitions": [
+      {
+       "AttributeName": "id",
+       "AttributeType": "S"
+      }
+     ]
+    },
+    "items_hash": "48050670c31f1282ce9270fac0c3b05b26f3e3b0da09aff71a874440fe7831be"
+   }
+  ],
+  "dynamodb_items": [
+   {
+    "table_name": "produtos",
+    "item": {
+     "id": {
+      "S": "p-003"
+     },
+     "nome": {
+      "S": "Garrafa térmica"
+     },
+     "preco": {
+      "N": "89"
+     },
+     "imagem": {
+      "S": "s3://catalogo-imagens/produtos/p-003.svg"
+     },
+     "estoque": {
+      "N": "0"
+     },
+     "categoria": {
+      "S": "cozinha"
+     }
+    }
+   },
+   {
+    "table_name": "produtos",
+    "item": {
+     "id": {
+      "S": "p-002"
+     },
+     "nome": {
+      "S": "Camiseta básica"
+     },
+     "preco": {
+      "N": "59.9"
+     },
+     "imagem": {
+      "S": "s3://catalogo-imagens/produtos/p-002.svg"
+     },
+     "estoque": {
+      "N": "45"
+     },
+     "categoria": {
+      "S": "vestuario"
+     }
+    }
+   },
+   {
+    "table_name": "produtos",
+    "item": {
+     "id": {
+      "S": "p-005"
+     },
+     "nome": {
+      "S": "Caderno pontilhado"
+     },
+     "preco": {
+      "N": "29.5"
+     },
+     "imagem": {
+      "S": "s3://catalogo-imagens/produtos/p-005.svg"
+     },
+     "estoque": {
+      "N": "300"
+     },
+     "categoria": {
+      "S": "papelaria"
+     }
+    }
+   },
+   {
+    "table_name": "produtos",
+    "item": {
+     "id": {
+      "S": "p-004"
+     },
+     "nome": {
+      "S": "Mochila de notebook"
+     },
+     "preco": {
+      "N": "199.9"
+     },
+     "imagem": {
+      "S": "s3://catalogo-imagens/produtos/p-004.svg"
+     },
+     "estoque": {
+      "N": "12"
+     },
+     "categoria": {
+      "S": "acessorios"
+     }
+    }
+   },
+   {
+    "table_name": "produtos",
+    "item": {
+     "id": {
+      "S": "p-001"
+     },
+     "nome": {
+      "S": "Caneca de cerâmica"
+     },
+     "preco": {
+      "N": "39.9"
+     },
+     "imagem": {
+      "S": "s3://catalogo-imagens/produtos/p-001.svg"
+     },
+     "estoque": {
+      "N": "120"
+     },
+     "categoria": {
+      "S": "cozinha"
+     }
+    }
+   }
+  ],
+  "sqs_queues": [],
+  "stored_resources": [
+   {
+    "service": "iam",
+    "type": "role",
+    "name": "aws-console-local-lambda",
+    "data": {
+     "name": "aws-console-local-lambda",
+     "path": "/service-role/",
+     "description": "Criado pelo Console AWS local",
+     "trustPolicy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+     "inlinePolicies": {
+      "permissoes": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\",\"sqs:*\",\"sns:Publish\",\"dynamodb:*\",\"s3:*\",\"secretsmanager:GetSecretValue\",\"ssm:GetParameter*\",\"s3vectors:*\",\"bedrock:InvokeModel\"],\"Resource\":\"*\"}]}"
+     },
+     "managedPolicyArns": [],
+     "maxSessionDuration": 3600
+    },
+    "blob": null
+   },
+   {
+    "service": "lambda",
+    "type": "function",
+    "name": "configuracao-do-catalogo",
+    "data": {
+     "role": "arn:aws:iam::000000000000:role/service-role/aws-console-local-lambda",
+     "handler": "app.handler",
+     "runtime": "python3.12",
+     "timeout": 10,
+     "codeSha256": "lU4YgNa3KrKuwYYsdFTIcoC5mOuA3VIUsaQedCHkb6Q=",
+     "memorySize": 128,
+     "description": "Devolve a configuração do catálogo recebida por variáveis de ambiente",
+     "environment": {
+      "BUCKET": "catalogo-imagens",
+      "TABELA": "produtos"
+     },
+     "permissions": []
+    },
+    "blob": "UEsDBBQAAAAIAGW+eV0By8embQAAAIUAAAAGAAAAYXBwLnB5y8wtyC8qUcgv5uJKSU1TyEjMS8lJLdJILUvNK9FRSM7PK0mtKNG04lIAgqLUktKiPIVq9ZLEpNScRHUroDa91LyyzKL8vGj1EEcnVx9H9VgdBfWk0uTs1BI0eadQZ2/XELA82PR8oDyYUcsFAFBLAQIUABQAAAAIAGW+eV0By8embQAAAIUAAAAGAAAAAAAAAAAAAAAAAAAAAABhcHAucHlQSwUGAAAAAAEAAQA0AAAAkQAAAAAA"
+   },
+   {
+    "service": "secretsmanager",
+    "type": "secret",
+    "name": "catalogo/api-key",
+    "data": {
+     "value": {
+      "kind": "string",
+      "value": "chave-de-exemplo-123"
+     },
+     "description": "Chave fictícia de um parceiro"
+    },
+    "blob": null
+   },
+   {
+    "service": "ssm",
+    "type": "parameter",
+    "name": "/catalogo/itens-por-pagina",
+    "data": {
+     "name": "/catalogo/itens-por-pagina",
+     "type": "String",
+     "value": "20",
+     "description": ""
+    },
+    "blob": null
+   },
+   {
+    "service": "ssm",
+    "type": "parameter",
+    "name": "/catalogo/moeda",
+    "data": {
+     "name": "/catalogo/moeda",
+     "type": "String",
+     "value": "BRL",
+     "description": ""
+    },
+    "blob": null
+   }
+  ]
+ }
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CATALOG_SERVICE_IDS } from '../src/catalog/ids.js';
-import { aggregateScores, type ScoreUnit } from '../src/emulator/fidelity.js';
+import { aggregateScores, compareReports, type FidelityReport, type ServiceFidelity, type ScoreUnit } from '../src/emulator/fidelity.js';
 import { SERVICE_NAMESPACES } from '../src/emulator/serviceNamespaces.js';
 import { compareVersions, normalizeVersion, parseVersionOutput } from '../src/emulator/versions.js';
 
@@ -76,5 +76,26 @@ describe('aggregateScores', () => {
 describe('SERVICE_NAMESPACES', () => {
   it('cobre todos os serviços do catálogo', () => {
     for (const id of CATALOG_SERVICE_IDS) expect(SERVICE_NAMESPACES[id], id).toBeDefined();
+  });
+});
+
+describe('compareReports', () => {
+  const report = (version: string, scores: Record<string, number | null>): FidelityReport => ({
+    version,
+    scoredAt: null,
+    services: Object.fromEntries(Object.entries(scores).map(([id, score]) => [id, { score } as ServiceFidelity])),
+  });
+
+  it('lista só as notas que mudam, das que mais melhoram para as que mais pioram', () => {
+    const changes = compareReports(
+      report('1.0.1', { rds: 0.74, s3: 0.9, sqs: 0.95, kms: 0.5 }),
+      report('1.0.2', { rds: 0.77, s3: 0.902, sqs: 0.9, kms: 0.6, eks: 0.8 }),
+    );
+    expect(changes).toEqual([
+      { service: 'eks', before: null, after: 0.8 },
+      { service: 'kms', before: 0.5, after: 0.6 },
+      { service: 'rds', before: 0.74, after: 0.77 },
+      { service: 'sqs', before: 0.95, after: 0.9 },
+    ]);
   });
 });

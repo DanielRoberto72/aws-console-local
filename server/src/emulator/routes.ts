@@ -16,6 +16,8 @@ export function emulatorRoutes(app: FastifyInstance, info: EmulatorInfo): void {
     return { status: 'ok', version: report.version, scoredAt: report.scoredAt, releaseUrl, services };
   });
 
+  app.get('/api/emulator/fidelity-change', async () => info.fidelityChange());
+
   app.get<{ Params: { service: string } }>(
     '/api/emulator/fidelity/:service',
     { schema: { params: { type: 'object', required: ['service'], properties: { service: { type: 'string', maxLength: 64 } } } } },

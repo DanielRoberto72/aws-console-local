@@ -19,6 +19,13 @@ export class NotFoundError extends Error {
   }
 }
 
+/** Ação impossível no estado atual (ex.: emulador fora do ar ou sem suporte a reinício). */
+export class ConflictError extends Error {
+  constructor(message: string, readonly code = 'Conflict') {
+    super(message);
+  }
+}
+
 interface AwsLikeError {
   name: string;
   message: string;
@@ -42,6 +49,7 @@ export function describeError(err: unknown): string {
  */
 export function toHttpError(err: unknown): { status: number; body: ApiErrorBody } {
   if (err instanceof BadRequestError) return { status: 400, body: { code: err.code, message: err.message } };
+  if (err instanceof ConflictError) return { status: 409, body: { code: err.code, message: err.message } };
   if (err instanceof NotFoundError) return { status: 404, body: { code: 'NotFound', message: err.message } };
 
   const fastifyErr = err as Partial<FastifyError>;

@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import type { Agent } from 'node:https';
 import multipart from '@fastify/multipart';
 import fastifyStatic from '@fastify/static';
@@ -61,6 +62,9 @@ import { StepFunctionsService } from './stepfunctions/stepFunctionsService.js';
 import { StepFunctionsSync } from './stepfunctions/stepFunctionsSync.js';
 import { SyncMonitor } from './sync/syncMonitor.js';
 import { EmulatorInfo } from './emulator/emulatorInfo.js';
+import { EmulatorControl } from './environment/emulatorControl.js';
+import { EnvironmentService } from './environment/environmentService.js';
+import { environmentRoutes } from './environment/routes.js';
 import { emulatorRoutes } from './emulator/routes.js';
 import { CatalogForwarding } from './forwarding/catalogForwarding.js';
 import type { PortRange } from './forwarding/endpoints.js';
@@ -80,8 +84,12 @@ export interface AppDeps {
   webDistDir: string | undefined;
   /** Repasse de portas para o host; ausente fora do compose. */
   forwarding?: { ports: PortRange; listenHost: string };
-  emulatorVersionFile?: string;
+  /** Pasta compartilhada com o container do emulador (versão e pedidos de reinício). */
+  emulatorInfoDir?: string;
 }
+
+/** Modelos de laboratório: server/templates, tanto em src/ (tsx) quanto em dist/. */
+const TEMPLATES_DIR = fileURLToPath(new URL('../templates/', import.meta.url));
 
 /** Ponto de composição: conecta serviços, persistência e rotas. */
 export async function buildApp(deps: AppDeps): Promise<{ app: FastifyInstance; sync: SyncMonitor; forwarding: CatalogForwarding | null }> {
@@ -181,7 +189,9 @@ export async function buildApp(deps: AppDeps): Promise<{ app: FastifyInstance; s
   });
   activityRoutes(app, activity);
   overviewRoutes(app, deps.db, sync);
-  emulatorRoutes(app, new EmulatorInfo(deps.db, deps.emulatorVersionFile, app.log));
+  const control = new EmulatorControl(deps.emulatorInfoDir);
+  emulatorRoutes(app, new EmulatorInfo(deps.db, control, app.log));
+  environmentRoutes(app, new EnvironmentService(deps.db, sync, deps.probe, control, TEMPLATES_DIR, app.log));
 
   if (deps.webDistDir && existsSync(deps.webDistDir)) {
     await app.register(fastifyStatic, { root: deps.webDistDir });
